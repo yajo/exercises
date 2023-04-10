@@ -70,7 +70,7 @@ sumOfSquares x y = x * x + y * y
 -}
 -- DON'T FORGET TO SPECIFY THE TYPE IN HERE
 lastDigit :: Int -> Int
-lastDigit n = mod (abs n) 10
+lastDigit n = abs n `mod` 10
 
 {- | Write a function that takes three numbers and returns the
 difference between the biggest number and the smallest one.
@@ -86,7 +86,7 @@ function.
 -}
 minmax :: Int -> Int -> Int -> Int
 minmax x y z =
-    let biggest = foldl max x [y, z]
+    let biggest = max x (max y z)
         smallest = foldl min x [y, z]
     in biggest - smallest
 
@@ -109,7 +109,7 @@ subString :: Int -> Int -> String -> String
 subString start end str
     | start < 0 = subString 0 end str
     | end < 0 = ""
-    | otherwise = drop start (take (end + 1) str)
+    | otherwise = take (end - start + 1) (drop start str)
 
 {- | Write a function that takes a String — space separated numbers,
 and finds a sum of the numbers inside this string.
@@ -120,10 +120,7 @@ and finds a sum of the numbers inside this string.
 The string contains only spaces and/or numbers.
 -}
 strSum :: String -> Int
-strSum str =
-    let nums = words str
-        ints = map read nums
-    in sum ints
+strSum str = sum (map read (words str))
 
 {- | Write a function that takes a number and a list of numbers and
 returns a string, saying how many elements of the list are strictly
@@ -140,13 +137,12 @@ and lower than 6 elements (4, 5, 6, 7, 8 and 9).
 -}
 lowerAndGreater :: Int -> [Int] -> String
 lowerAndGreater n list =
-    let lowerCount = countMatching (< n) list
-        greaterCount = countMatching (> n) list
+    let (lowerCount, greaterCount) = countMatching 0 0 list
     in show n ++ " is greater than " ++ show lowerCount ++ " elements and lower than " ++ show greaterCount ++ " elements"
     where
-        countMatching :: (Int -> Bool) -> [Int] -> Int
-        countMatching predicate remaining
-            | null remaining = 0
-            | otherwise =
-                let matchSum = if predicate (head remaining) then 1 else 0
-                in matchSum + countMatching predicate (tail remaining)
+        countMatching :: Int -> Int -> [Int] -> (Int, Int)
+        countMatching lower greater remaining
+            | null remaining = (lower, greater)
+            | head remaining < n = countMatching (lower + 1) greater (tail remaining)
+            | head remaining > n = countMatching lower (greater + 1) (tail remaining)
+            | otherwise = countMatching lower greater (tail remaining)
