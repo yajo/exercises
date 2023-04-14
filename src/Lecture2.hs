@@ -174,8 +174,29 @@ data Knight = Knight
     { knightHealth    :: Int
     , knightAttack    :: Int
     , knightEndurance :: Int
-    }
+    } deriving Show
 
+data Chest = Chest 
+  { chestGold :: Int
+  , chestTreasure :: Maybe treasure
+  } deriving Show
+
+data DragonColor = Green | Black | Blue
+  deriving Show
+
+data Dragon = Dragon
+  { dragonColor :: DragonColor
+  , dragonXP :: Int
+  , dragonHealth :: Int
+  , dragonFirePower :: Int
+  , dragonChest :: Chest
+  }
+
+data FightResult = Won | Lost | Retired
+
+type ErrorMsg = String
+
+dragonFight :: Dragon -> Knight -> Either ErrorMsg FightResult
 dragonFight = error "TODO"
 
 ----------------------------------------------------------------------------
